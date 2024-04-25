@@ -15,7 +15,7 @@ const login = async (req, res) => {
     const user = await db.query("SELECT * FROM users WHERE email=$1", [email]);
 
     // check if the email match
-    if (!user.rows[0].email)
+    if (!user.rows[0])
       return res.status(401).json({ message: "Incorrect email or password" });
 
     // check if the password match
@@ -100,7 +100,7 @@ const signup = async (req, res) => {
       .json({ message: "Signup successful", user: user.rows });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -122,7 +122,7 @@ const logout = (req, res) => {
 
 // function to create a token
 function createToken(id) {
-  return jwt.sign({ id }, process.env.SECRET_KEY);
+  return jwt.sign({ userId: id }, process.env.SECRET_KEY);
 }
 
 module.exports = { signup, login, logout };

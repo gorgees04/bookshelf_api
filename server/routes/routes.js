@@ -4,6 +4,6 @@ const auth = require("./auth");
 const books = require("./books");
 
 router.use("/auth", auth);
-router.use("/auth", books);
+router.use("/books", books);
 
 module.exports = router;

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS books (
     book_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    book_name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     book_url VARCHAR(255),
     file_path VARCHAR(255),
