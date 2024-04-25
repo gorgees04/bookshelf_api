@@ -3,6 +3,56 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../db");
 
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // check if the user entered both fields
+    if (!email || !password)
+      return res.status(400).json({ message: "All fields must be filled" });
+
+    // check if the user exist
+    const user = await db.query("SELECT * FROM users WHERE email=$1", [email]);
+
+    // check if the email match
+    if (!user.rows[0].email)
+      return res.status(401).json({ message: "Incorrect email or password" });
+
+    // check if the password match
+    const matchPassword = await bcrypt.compare(
+      password,
+      user.rows[0].hashed_password
+    );
+    if (!matchPassword)
+      return res.status(401).json({ message: "Incorrect email or password" });
+
+    // create a token
+    const token = createToken(user.rows[0].user_id);
+
+    // store token in cookie
+    res.cookie("token", token, {
+      secure: true,
+      httpOnly: true,
+      sameSite: "None",
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    // send token with user details
+    return res.status(201).json({
+      user: user.rows[0],
+      message: "Login successful",
+    });
+  } catch (error) {
+    // checking if the it's validation error
+    if (error.name === "ValidationError") {
+      console.error(error);
+      return res.status(400).json({ message: error.message });
+    }
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const signup = async (req, res) => {
   const { firstName, lastName, email, password, confirmPassword } = req.body;
   try {
@@ -58,4 +108,4 @@ const signup = async (req, res) => {
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET_KEY);
 }
-module.exports = { signup };
+module.exports = { signup, login };
