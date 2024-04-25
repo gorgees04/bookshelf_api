@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    hash_password VARCHAR(255) NOT NULL, 
+    hashed_password VARCHAR(255) NOT NULL, 
     email VARCHAR(255) NOT NULL UNIQUE
 );
 
