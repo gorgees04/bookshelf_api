@@ -38,7 +38,7 @@ const login = async (req, res) => {
     });
 
     // send token with user details
-    return res.status(201).json({
+    return res.status(200).json({
       user: user.rows[0],
       message: "Login successful",
     });
@@ -104,8 +104,25 @@ const signup = async (req, res) => {
   }
 };
 
+// logout
+const logout = (req, res) => {
+  try {
+    res.clearCookie("token");
+    return res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    // checking if the it's validation error
+    if (error.name === "ValidationError") {
+      console.error(error);
+      return res.status(400).json({ message: error.message });
+    }
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 // function to create a token
 function createToken(id) {
   return jwt.sign({ id }, process.env.SECRET_KEY);
 }
-module.exports = { signup, login };
+
+module.exports = { signup, login, logout };
