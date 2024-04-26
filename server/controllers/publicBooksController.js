@@ -2,8 +2,15 @@ const db = require("../db");
 
 // GET::public books
 const getAllPublicBooks = async (req, res) => {
+  const { limit, offset } = req.params;
   try {
-    const books = await db.query(`
+    // if there is no limit pass in params limtit is 20 by default
+    const limitBooks = limit || 20;
+    const page = (offset || 0) * limitBooks;
+
+    // get all books
+    const books = await db.query(
+      `
       SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
       JSON_BUILD_OBJECT('first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
       FROM books b
@@ -11,7 +18,11 @@ const getAllPublicBooks = async (req, res) => {
       LEFT JOIN authors a ON b.author_id = a.author_id
       LEFT JOIN genres g ON b.genre_id = g.genre_id
       WHERE b.status='public'
-    `);
+      LIMIT $1
+      OFFSET $2
+    `,
+      [limitBooks, page]
+    );
 
     return res.status(200).json(books.rows);
   } catch (error) {
@@ -46,8 +57,12 @@ const getSinglePublicBook = async (req, res) => {
 
 // GET::search for books where start with (book_name, author)
 const searchPublicBooks = async (req, res) => {
-  const { bookOrAuthor } = req.query;
+  const { bookOrAuthor, limit, offset } = req.query;
   try {
+    // if there is no limit pass in params limtit is 20 by default
+    const limitBooks = limit || 20;
+    const page = (offset || 0) * limitBooks;
+
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
@@ -57,8 +72,10 @@ const searchPublicBooks = async (req, res) => {
         LEFT JOIN authors a ON b.author_id = a.author_id
         LEFT JOIN genres g ON b.genre_id = g.genre_id
         WHERE b.status='public' AND (LOWER(b.book_name) LIKE LOWER($1 || '%') OR LOWER(a.author_name) LIKE LOWER($1 || '%'))
+        LIMIT $2
+        OFFSET $3
       `,
-      [bookOrAuthor]
+      [bookOrAuthor, limitBooks, page]
     );
 
     return res.status(200).json(book.rows);
