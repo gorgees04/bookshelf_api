@@ -19,9 +19,9 @@ const uploadFile = async (pdfFile, folderPath) => {
     const bucket = admin.storage().bucket();
     const imageBuffer = pdfFile.buffer;
     // add the date to the file name to ignore the dublicated names
-    const today = new Date().toLocaleDateString().replace(/\//g, "-");
+    const date = new Date();
     // folderPath is the name of the folder in firebase storage
-    const fileName = folderPath + "/" + today + "_" + pdfFile.originalname;
+    const fileName = folderPath + "/" + pdfFile.originalname + "_" + date;
     const file = bucket.file(fileName);
     // saving the file in database
     await file.save(imageBuffer, {

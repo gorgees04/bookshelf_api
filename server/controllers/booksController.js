@@ -59,7 +59,7 @@ const createBook = async (req, res) => {
         description,
         bookUrl,
         pdfFileUrl,
-        status.toLowerCase() || "public",
+        status ? status.toLowerCase() : "public",
         genreQuery.rows[0].genre_id,
         user.rows[0].user_id,
         author.rows[0].author_id,
@@ -67,7 +67,7 @@ const createBook = async (req, res) => {
     );
     return res
       .status(200)
-      .json({ message: "new book created", book: book.rows[0] });
+      .json({ message: "New book created", book: book.rows[0] });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
