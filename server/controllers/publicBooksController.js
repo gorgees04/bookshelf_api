@@ -71,7 +71,7 @@ const searchPublicBooks = async (req, res) => {
         LEFT JOIN users u ON b.user_id = u.user_id
         LEFT JOIN authors a ON b.author_id = a.author_id
         LEFT JOIN genres g ON b.genre_id = g.genre_id
-        WHERE b.status='public' AND (LOWER(b.book_name) LIKE LOWER($1 || '%') OR LOWER(a.author_name) LIKE LOWER($1 || '%'))
+        WHERE b.status='public' AND (LOWER(b.book_name) LIKE LOWER('%' || $1 || '%') OR LOWER(a.author_name) LIKE LOWER('%' || $1 || '%'))
         LIMIT $2
         OFFSET $3
       `,
