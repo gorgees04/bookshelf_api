@@ -15,7 +15,7 @@ const login = async (req, res) => {
     const user = await db.query("SELECT * FROM users WHERE email=$1", [email]);
 
     // check if the email match
-    if (!user.rows[0].email)
+    if (!user.rows[0])
       return res.status(401).json({ message: "Incorrect email or password" });
 
     // check if the password match
@@ -76,16 +76,13 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // save user in db
-    await db.query(
-      "INSERT INTO users (email, hashed_password, first_name, last_name) VALUES ($1, $2, $3, $4)",
+    const user = await db.query(
+      "INSERT INTO users (email, hashed_password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
       [email, hashedPassword, firstName, lastName]
     );
 
-    // get user
-    const user = await db.query("SELECT * FROM users WHERE email=$1", [email]);
-
     // create a token
-    const token = createToken(user.user_id);
+    const token = createToken(user.rows[0].user_id);
 
     // store token in cookie
     res.cookie("token", token, {
@@ -100,7 +97,7 @@ const signup = async (req, res) => {
       .json({ message: "Signup successful", user: user.rows });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -122,7 +119,7 @@ const logout = (req, res) => {
 
 // function to create a token
 function createToken(id) {
-  return jwt.sign({ id }, process.env.SECRET_KEY);
+  return jwt.sign({ userId: id }, process.env.SECRET_KEY);
 }
 
 module.exports = { signup, login, logout };

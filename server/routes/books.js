@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const booksController = require("../controllers/booksController");
+const authUser = require("../middlewares/authUser");
+const { uploadMulter } = require("../middlewares/Multer");
+
+router.use(uploadMulter.single("bookFile"));
+
+router.use(authUser);
 
 // get public books
 // router.get("/", booksController.getAllBooks);
@@ -11,6 +17,6 @@ const booksController = require("../controllers/booksController");
 // router.get("/user", booksController.getSingleUsersBook);
 
 // create a new book
-// router.post("/new", booksController.createBook);
+router.post("/new", booksController.createBook);
 
 module.exports = router;

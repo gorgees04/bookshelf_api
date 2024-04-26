@@ -13,12 +13,12 @@ END$$;
 
 CREATE TABLE IF NOT EXISTS authors (
     author_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    author_name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS genres (
     genre_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    genre VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -31,10 +31,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS books (
     book_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    book_name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    book_url VARCHAR(255),
-    file_path VARCHAR(255),
+    book_url TEXT,
+    file_path TEXT,
     status status_enum DEFAULT 'public',
     genre_id UUID REFERENCES genres(genre_id),
     user_id UUID REFERENCES users(user_id),
