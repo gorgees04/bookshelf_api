@@ -1,11 +1,7 @@
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
-const {
-  getStorage,
-  getDownloadURL,
-  ref,
-  storage,
-} = require("firebase-admin/storage");
+const { getStorage, getDownloadURL } = require("firebase-admin/storage");
+const moment = require("moment");
 
 // initialize firebase app as admin
 admin.initializeApp({
@@ -13,15 +9,16 @@ admin.initializeApp({
   storageBucket: "bookshelf-app-a6b3c.appspot.com",
 });
 
-const uploadFile = async (pdfFile, folderPath) => {
+const uploadFile = async (pdfFile, folderPath, bookName) => {
   // pdfFile will come from request through multer
   try {
     const bucket = admin.storage().bucket();
     const imageBuffer = pdfFile.buffer;
     // add the date to the file name to ignore the dublicated names
     const date = new Date();
+    const formatData = moment(date).format("D-M-YY,h:mm:ss-a");
     // folderPath is the name of the folder in firebase storage
-    const fileName = folderPath + "/" + pdfFile.originalname + "_" + date;
+    const fileName = folderPath + "/" + bookName + "_" + formatData;
     const file = bucket.file(fileName);
     // saving the file in database
     await file.save(imageBuffer, {

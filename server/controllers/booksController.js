@@ -1,5 +1,5 @@
 const db = require("../db");
-const { uploadFile } = require("../utils/fileUpload/filesStorage");
+const { uploadFile, deleteFile } = require("../utils/fileUpload/filesStorage");
 const { capitalize } = require("../utils/functions");
 
 // POST::create a new book
@@ -7,6 +7,17 @@ const createBook = async (req, res) => {
   const { bookName, description, bookUrl, status, genre, authorName } =
     req.body;
   try {
+    // check status
+    if (
+      status &&
+      status.toLowerCase() !== "private" &&
+      status.toLowerCase() !== "public"
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Status either should be PRIVATE or PUBLIC" });
+    }
+
     const user = await db.query("SELECT * FROM users WHERE user_id=$1", [
       req.userId,
     ]);
@@ -17,7 +28,7 @@ const createBook = async (req, res) => {
     const pdfFile = req.file;
     let pdfFileUrl;
     if (pdfFile) {
-      pdfFileUrl = await uploadFile(pdfFile, "bookshelf-app-books");
+      pdfFileUrl = await uploadFile(pdfFile, "bookshelf-app-books", bookName);
       if (!pdfFileUrl) {
         return res.status(500).json({ message: "Failed to upload image" });
       }
@@ -80,33 +91,85 @@ const updateBook = async (req, res) => {
   const { bookName, description, bookUrl, status, genre, authorName } =
     req.body;
   try {
+    // check status
+    if (
+      status &&
+      status.toLowerCase() !== "private" &&
+      status.toLowerCase() !== "public"
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Status either should be PRIVATE or PUBLIC" });
+    }
+
     const user = await db.query("SELECT * FROM users WHERE user_id=$1", [
       req.userId,
     ]);
     if (!user.rows[0])
       return res.status(401).json({ message: "Access denied" });
 
-    if (genre === "public" || genre === "private") {
-      await db.query(`UPDATE genres SET genre = $1 WHERE book_id = $2`, [
-        genre,
-        id,
-      ]);
+    // get the book with neccessry details
+    const bookQuery = `SELECT book_id, book_name, description, book_url, file_path, status, email, author_name, genre FROM books 
+                        LEFT JOIN users ON books.user_id = users.user_id
+                        LEFT JOIN authors ON books.author_id = authors.author_id
+                        LEFT JOIN genres ON books.genre_id = genres.genre_id
+                        WHERE book_id=$1 AND books.user_id=$2`;
+
+    const book = await db.query(bookQuery, [id, user.rows[0].user_id]);
+
+    // check if the other matches, if not create a new one
+    let author;
+    if (authorName && authorName.toLowerCase() !== book.rows[0].author_name) {
+      author = await db.query(
+        "INSERT INTO authors (author_name) VALUES ($1) RETURNING *",
+        [authorName.toLowerCase()]
+      );
+    }
+    // check if the genres matches, if not create a new one
+    let genres;
+    if (genre && genre.toLowerCase() !== book.rows[0].genre) {
+      genres = await db.query(
+        "INSERT INTO genres (genre) VALUES ($1) RETURNING *",
+        [genre.toLowerCase()]
+      );
+    }
+
+    // get the pdf file url
+    const pdfFile = req.file;
+    let pdfFileUrl;
+    if (pdfFile) {
+      deleteFile(book.rows[0].file_path);
+      pdfFileUrl = await uploadFile(
+        pdfFile,
+        "bookshelf-app-books",
+        book.rows[0].book_name
+      );
+      if (!pdfFileUrl) {
+        return res.status(500).json({ message: "Failed to upload image" });
+      }
     }
 
     const updateQuery = `
       UPDATE books 
-      SET COALESCE($1, book_name), 
-      WHERE book_id = $5 RETURNING *
+      SET book_name = COALESCE($1, book_name), description = COALESCE($2, description), 
+      book_url = COALESCE($3, book_url), file_path = COALESCE($4, file_path), 
+      status = COALESCE($5, status), genre_id = COALESCE($6, genre_id), author_id = COALESCE($7, author_id)
+      WHERE book_id=$8 RETURNING *
     `;
     const updatedBook = await db.query(updateQuery, [
-      bookName,
+      bookName && capitalize(bookName),
       description,
       bookUrl,
-      status,
+      pdfFileUrl,
+      status && status.toLowerCase(),
+      genres && genres.rows[0].genre_id,
+      author && author.rows[0].author_id,
       id,
     ]);
 
-    return res.status(200).json({ book: updatedBook.rows[0] });
+    return res
+      .status(200)
+      .json({ message: "Book updated successful", book: updatedBook.rows[0] });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
