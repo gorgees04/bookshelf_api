@@ -11,7 +11,7 @@ router.use(uploadMulter.single("bookFile"));
 router.use(authUser);
 
 // get public books
-// router.get("/public", publicBooksController.getAllPublicBooks);
+router.get("/public", publicBooksController.getAllPublicBooks);
 // router.get("/public/:bookId", publicBooksController.getSinglePublicBook);
 // router.get('/public/search', publicBooksController.searchPublicBooks)
 // router.get('/public/filter', publicBooksController.filterPublicBooks)
