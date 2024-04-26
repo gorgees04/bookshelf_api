@@ -76,16 +76,13 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // save user in db
-    await db.query(
-      "INSERT INTO users (email, hashed_password, first_name, last_name) VALUES ($1, $2, $3, $4)",
+    const user = await db.query(
+      "INSERT INTO users (email, hashed_password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
       [email, hashedPassword, firstName, lastName]
     );
 
-    // get user
-    const user = await db.query("SELECT * FROM users WHERE email=$1", [email]);
-
     // create a token
-    const token = createToken(user.user_id);
+    const token = createToken(user.rows[0].user_id);
 
     // store token in cookie
     res.cookie("token", token, {
