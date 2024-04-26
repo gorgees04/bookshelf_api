@@ -87,7 +87,7 @@ const createBook = async (req, res) => {
 
 // PUT::update a single book
 const updateBook = async (req, res) => {
-  const { id } = req.params;
+  const { bookId } = req.params;
   const { bookName, description, bookUrl, status, genre, authorName } =
     req.body;
   try {
@@ -112,7 +112,7 @@ const updateBook = async (req, res) => {
                         LEFT JOIN genres ON books.genre_id = genres.genre_id
                         WHERE book_id=$1 AND books.user_id=$2`;
 
-    const book = await db.query(bookQuery, [id, user.rows[0].user_id]);
+    const book = await db.query(bookQuery, [bookId, user.rows[0].user_id]);
 
     // check if the other matches, if not create a new one
     let author;
@@ -161,7 +161,7 @@ const updateBook = async (req, res) => {
       status && status.toLowerCase(),
       genres && genres.rows[0].genre_id,
       author && author.rows[0].author_id,
-      id,
+      bookId,
     ]);
 
     return res
@@ -175,14 +175,14 @@ const updateBook = async (req, res) => {
 
 // DELETE::delete a single book
 const deleteBook = async (req, res) => {
-  const { id } = req.params;
+  const { bookId } = req.params;
   try {
     // check for user's authorization
     const user = await checkUserAuth(req, res);
 
     const deletedBook = await db.query(
       "DELETE FROM books WHERE book_id=$1 AND user_id=$2 RETURNING *",
-      [id, user.rows[0].user_id]
+      [bookId, user.rows[0].user_id]
     );
 
     // delete book file
