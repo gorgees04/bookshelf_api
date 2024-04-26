@@ -1,16 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Define custom enum type
-DO $$BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM pg_type
-    WHERE typname = 'status_enum'
-  ) THEN
-    CREATE TYPE status_enum AS ENUM ('public', 'private');
-  END IF;
-END$$;
-
 CREATE TABLE IF NOT EXISTS authors (
     author_id UUID DEFAULT uuid_generate_v4() NOT NULL PRIMARY KEY,
     author_name VARCHAR(255) NOT NULL
@@ -35,15 +24,10 @@ CREATE TABLE IF NOT EXISTS books (
     description TEXT NOT NULL,
     book_url TEXT,
     file_path TEXT,
-    status status_enum DEFAULT 'public',
+    status VARCHAR(255) DEFAULT 'public',
     genre_id UUID REFERENCES genres(genre_id),
     user_id UUID REFERENCES users(user_id),
     author_id UUID REFERENCES authors(author_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
--- CREATE INDEX idx_books_user_id ON books(user_id);
--- CREATE INDEX idx_books_author_id ON books(author_id);
--- CREATE INDEX idx_books_genre_id ON books(genre_id);
