@@ -2,6 +2,7 @@ const { validationSignup } = require("../utils/validation");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const db = require("../db");
+const { capitalize } = require("../utils/functions");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -78,7 +79,12 @@ const signup = async (req, res) => {
     // save user in db
     const user = await db.query(
       "INSERT INTO users (email, hashed_password, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING *",
-      [email, hashedPassword, firstName, lastName]
+      [
+        email.toLowerCase(),
+        hashedPassword,
+        capitalize(firstName),
+        capitalize(lastName),
+      ]
     );
 
     // create a token

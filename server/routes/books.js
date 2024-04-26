@@ -18,5 +18,7 @@ router.use(authUser);
 
 // create a new book
 router.post("/new", booksController.createBook);
+router.put("/:id", booksController.updateBook);
+router.delete("/:id", booksController.deleteBook);
 
 module.exports = router;

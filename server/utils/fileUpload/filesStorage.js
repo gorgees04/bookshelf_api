@@ -21,8 +21,8 @@ const uploadFile = async (pdfFile, folderPath) => {
     // add the date to the file name to ignore the dublicated names
     const today = new Date().toLocaleDateString().replace(/\//g, "-");
     // folderPath is the name of the folder in firebase storage
-    const imageName = folderPath + "/" + today + "_" + pdfFile.originalname;
-    const file = bucket.file(imageName);
+    const fileName = folderPath + "/" + today + "_" + pdfFile.originalname;
+    const file = bucket.file(fileName);
     // saving the file in database
     await file.save(imageBuffer, {
       contentType: pdfFile.mimetype,
@@ -31,7 +31,7 @@ const uploadFile = async (pdfFile, folderPath) => {
     // getting fileUrl
     const fileRef = getStorage()
       .bucket("bookshelf-app-a6b3c.appspot.com")
-      .file(imageName);
+      .file(fileName);
     const downloadURL = await getDownloadURL(fileRef);
 
     return downloadURL;
