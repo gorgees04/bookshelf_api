@@ -12,5 +12,18 @@ const validationSignup = (body) => {
     throw new Error("Password is not strong enough");
   }
 };
+// valdite create book
+// bookName, description, bookUrl, status, genre, authorName
+const validationCreateBook = (body) => {
+  if (!body.bookName) {
+    throw Error("Book Name is required");
+  } else if (!body.description) {
+    throw Error("Descriptionis is required");
+  } else if (!body.genre) {
+    throw Error("Genre is required");
+  } else if (!body.authorName) {
+    throw Error("Author Name id required");
+  }
+};
 
-module.exports = { validationSignup };
+module.exports = { validationSignup, validationCreateBook };

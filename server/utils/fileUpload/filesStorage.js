@@ -54,6 +54,7 @@ const deleteFile = (fileUrl) => {
         console.log("File Deleted");
       })
       .catch(function (error) {
+        console.log("File doesn't exist");
         throw Error(error.message);
       });
   } catch (error) {

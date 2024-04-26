@@ -1,12 +1,15 @@
 const db = require("../db");
 const { uploadFile, deleteFile } = require("../utils/fileUpload/filesStorage");
 const { capitalize } = require("../utils/functions");
+const { validationCreateBook } = require("../utils/validation");
 
 // POST::create a new book
 const createBook = async (req, res) => {
   const { bookName, description, bookUrl, status, genre, authorName } =
     req.body;
   try {
+    // validation body
+    validationCreateBook(req.body);
     // check status
     if (
       status &&
@@ -18,11 +21,8 @@ const createBook = async (req, res) => {
         .json({ message: "Status either should be PRIVATE or PUBLIC" });
     }
 
-    const user = await db.query("SELECT * FROM users WHERE user_id=$1", [
-      req.userId,
-    ]);
-    if (!user.rows[0])
-      return res.status(401).json({ message: "Access denied" });
+    // check for user's authorization
+    const user = await checkUserAuth(req, res);
 
     // get the pdf file url
     const pdfFile = req.file;
@@ -102,11 +102,8 @@ const updateBook = async (req, res) => {
         .json({ message: "Status either should be PRIVATE or PUBLIC" });
     }
 
-    const user = await db.query("SELECT * FROM users WHERE user_id=$1", [
-      req.userId,
-    ]);
-    if (!user.rows[0])
-      return res.status(401).json({ message: "Access denied" });
+    // check for user's authorization
+    const user = await checkUserAuth(req, res);
 
     // get the book with neccessry details
     const bookQuery = `SELECT book_id, book_name, description, book_url, file_path, status, email, author_name, genre FROM books 
@@ -178,11 +175,60 @@ const updateBook = async (req, res) => {
 
 // DELETE::delete a single book
 const deleteBook = async (req, res) => {
+  const { id } = req.params;
   try {
+    // check for user's authorization
+    const user = await checkUserAuth(req, res);
+
+    const deletedBook = await db.query(
+      "DELETE FROM books WHERE book_id=$1 AND user_id=$2 RETURNING *",
+      [id, user.rows[0].user_id]
+    );
+
+    // delete book file
+    if (deletedBook.rows[0]) {
+      deleteFile(deletedBook.rows[0].file_path);
+    }
+
+    // delete genre if it was the only one
+    if (deletedBook.rows[0]) {
+      const genre = await db.query("SELECT * FROM books WHERE genre_id=$1", [
+        deletedBook.rows[0].genre_id,
+      ]);
+      if (genre.rowCount === 0) {
+        await db.query("DELETE FROM genres WHERE genre_id=$1", [
+          deletedBook.rows[0].genre_id,
+        ]);
+      }
+    }
+
+    // delete author if it was the only one
+    if (deletedBook.rows[0]) {
+      const author = await db.query("SELECT * FROM books WHERE author_id=$1", [
+        deletedBook.rows[0].author_id,
+      ]);
+      if (author.rowCount === 0) {
+        await db.query("DELETE FROM authors WHERE author_id=$1", [
+          deletedBook.rows[0].author_id,
+        ]);
+      }
+    }
+
+    return res
+      .status(200)
+      .json({ message: "book deleted", book: deletedBook.rows[0] });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
   }
 };
 
+// check if user is authrized
+async function checkUserAuth(req, res) {
+  const user = await db.query("SELECT * FROM users WHERE user_id=$1", [
+    req.userId,
+  ]);
+  if (!user.rows[0]) return res.status(401).json({ message: "Access denied" });
+  return user;
+}
 module.exports = { createBook, updateBook, deleteBook };
