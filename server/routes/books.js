@@ -13,7 +13,7 @@ router.use(authUser);
 // get public books
 router.get("/public", publicBooksController.getAllPublicBooks);
 router.get("/public/search", publicBooksController.searchPublicBooks);
-// router.get('/public/filter', publicBooksController.filterPublicBooks)
+router.get("/public/filter", publicBooksController.filterPublicBooks);
 router.get("/public/:bookId", publicBooksController.getSinglePublicBook);
 
 // get user's books
