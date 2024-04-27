@@ -9,3 +9,6 @@ package-lock.json
 serviceAccountKey.json
 .vercel
 
+
+# Local Netlify folder
+.netlify
