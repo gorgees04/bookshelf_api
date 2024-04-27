@@ -5,10 +5,3 @@ package-lock.json
 # local env files
 .env
 
-# firebase access key 
-serviceAccountKey.json
-.vercel
-
-
-# Local Netlify folder
-.netlify

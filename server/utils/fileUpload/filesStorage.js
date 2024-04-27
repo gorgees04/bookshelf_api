@@ -1,11 +1,12 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccountKey = require("./serviceAccountKey");
 const { getStorage, getDownloadURL } = require("firebase-admin/storage");
 const moment = require("moment");
+require("dotenv").config();
 
 // initialize firebase app as admin
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccountKey),
   storageBucket: "bookshelf-app-a6b3c.appspot.com",
 });
 
