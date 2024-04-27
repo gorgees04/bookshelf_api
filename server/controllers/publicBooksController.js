@@ -3,11 +3,13 @@ const db = require("../db");
 // GET::public books
 const getAllPublicBooks = async (req, res) => {
   const { limit, offset } = req.params;
-  try {
-    // if there is no limit pass in params limtit is 20 by default
-    const limitBooks = limit || 20;
-    const page = (offset || 0) * limitBooks;
 
+  // manage pagination
+  const limitBooks = limit ? parseInt(limit) : 20;
+  const safeOffset = offset ? parseInt(offset) : 0;
+  const page = limitBooks * safeOffset;
+
+  try {
     // get all books
     const books = await db.query(
       `
@@ -58,11 +60,13 @@ const getSinglePublicBook = async (req, res) => {
 // GET::search for books where start with (book_name, author)
 const searchPublicBooks = async (req, res) => {
   const { bookOrAuthor, limit, offset } = req.query;
-  try {
-    // if there is no limit pass in params limtit is 20 by default
-    const limitBooks = limit || 20;
-    const page = (offset || 0) * limitBooks;
 
+  // manage pagination
+  const limitBooks = limit ? parseInt(limit) : 20;
+  const safeOffset = offset ? parseInt(offset) : 0;
+  const page = limitBooks * safeOffset;
+
+  try {
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
@@ -88,11 +92,13 @@ const searchPublicBooks = async (req, res) => {
 // GET::filter by gernes
 const filterPublicBooks = async (req, res) => {
   const { genres, limit, offset } = req.query;
-  try {
-    // if there is no limit pass in params limtit is 20 by default
-    const limitBooks = limit || 20;
-    const page = (offset || 0) * limitBooks;
 
+  // manage pagination
+  const limitBooks = limit ? parseInt(limit) : 20;
+  const safeOffset = offset ? parseInt(offset) : 0;
+  const page = limitBooks * safeOffset;
+
+  try {
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,

@@ -19,7 +19,7 @@ router.get("/public/:bookId", publicBooksController.getSinglePublicBook);
 // get user's books
 router.get("/user", usersBooksController.getAllUsersBooks);
 router.get("/user/search", usersBooksController.searchUsersBooks);
-// router.get("/user/filter", usersBooksController.filterUsersBooks);
+router.get("/user/filter", usersBooksController.filterUsersBooks);
 router.get("/user/:bookId", usersBooksController.getSingleUsersBook);
 
 // create a new book
