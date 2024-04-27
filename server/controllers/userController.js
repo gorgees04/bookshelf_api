@@ -68,6 +68,7 @@ const updateUserInfo = async (req, res) => {
   }
 };
 
+// DELETE::delete user and all his books
 const deleteUserInfo = async (req, res) => {
   try {
     // get user
