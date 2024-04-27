@@ -35,7 +35,7 @@ const login = async (req, res) => {
       secure: true,
       httpOnly: true,
       sameSite: "None",
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 4,
     });
 
     // send token with user details
@@ -95,7 +95,7 @@ const signup = async (req, res) => {
       secure: true,
       httpOnly: true,
       sameSite: "None",
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 4,
     });
 
     return res
