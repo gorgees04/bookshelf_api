@@ -7,3 +7,5 @@ package-lock.json
 
 # firebase access key 
 serviceAccountKey.json
+.vercel
+
