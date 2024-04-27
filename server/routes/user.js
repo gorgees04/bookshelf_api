@@ -7,7 +7,7 @@ const authUser = require("../middlewares/authUser");
 router.use(authUser);
 
 router.get("/", userController.getUserInfo);
-// router.put("/", userController.updateUserInfo);
+router.put("/", userController.updateUserInfo);
 // router.delete("/", userController.deleteUserInfo);
 
 module.exports = router;
