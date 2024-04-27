@@ -17,10 +17,10 @@ router.get("/public/filter", publicBooksController.filterPublicBooks);
 router.get("/public/:bookId", publicBooksController.getSinglePublicBook);
 
 // get user's books
-// router.get("/user", booksController.getAllUsersBooks);
-// router.get("/user/:bookId", booksController.getSingleUsersBook);
-// router.get("/user/search", booksController.searchUsersBook);
-// router.get("/user/filter", booksController.filterUsersBook);
+router.get("/user", usersBooksController.getAllUsersBooks);
+router.get("/user/:bookId", usersBooksController.getSingleUsersBook);
+// router.get("/user/search", usersBooksController.searchUsersBook);
+// router.get("/user/filter", usersBooksController.filterUsersBook);
 
 // create a new book
 router.post("/user/new", booksController.createBook);

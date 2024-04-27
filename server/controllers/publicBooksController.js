@@ -12,7 +12,7 @@ const getAllPublicBooks = async (req, res) => {
     const books = await db.query(
       `
       SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
-      JSON_BUILD_OBJECT('first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
+      JSON_BUILD_OBJECT('user_id', u.user_id, 'first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
       FROM books b
       LEFT JOIN users u ON b.user_id = u.user_id
       LEFT JOIN authors a ON b.author_id = a.author_id
@@ -38,7 +38,7 @@ const getSinglePublicBook = async (req, res) => {
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
-        JSON_BUILD_OBJECT('first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
+        JSON_BUILD_OBJECT('user_id', u.user_id, 'first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
         FROM books b
         LEFT JOIN users u ON b.user_id = u.user_id
         LEFT JOIN authors a ON b.author_id = a.author_id
@@ -66,7 +66,7 @@ const searchPublicBooks = async (req, res) => {
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
-        JSON_BUILD_OBJECT('first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
+        JSON_BUILD_OBJECT('user_id', u.user_id, 'first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
         FROM books b
         LEFT JOIN users u ON b.user_id = u.user_id
         LEFT JOIN authors a ON b.author_id = a.author_id
@@ -96,7 +96,7 @@ const filterPublicBooks = async (req, res) => {
     const book = await db.query(
       `
         SELECT b.book_id, b.book_name, b.description, b.book_url, b.file_path, b.status, a.author_name, g.genre,
-        JSON_BUILD_OBJECT('first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
+        JSON_BUILD_OBJECT('user_id', u.user_id, 'first_name', u.first_name, 'last_name', u.last_name, 'email', u.email) AS user
         FROM books b
         LEFT JOIN users u ON b.user_id = u.user_id
         LEFT JOIN authors a ON b.author_id = a.author_id
