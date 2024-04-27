@@ -8,6 +8,6 @@ router.use(authUser);
 
 router.get("/", userController.getUserInfo);
 router.put("/", userController.updateUserInfo);
-// router.delete("/", userController.deleteUserInfo);
+router.delete("/", userController.deleteUserInfo);
 
 module.exports = router;

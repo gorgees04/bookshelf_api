@@ -1,4 +1,5 @@
 const db = require("../db");
+const { deleteFile } = require("../utils/fileUpload/filesStorage");
 const { capitalize } = require("../utils/functions");
 const validator = require("validator");
 
@@ -58,7 +59,72 @@ const updateUserInfo = async (req, res) => {
       ]
     );
 
-    return res.status(200).json(updatedUserInfo.rows[0]);
+    return res
+      .status(200)
+      .json({ message: "User info updated", user: updatedUserInfo.rows[0] });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const deleteUserInfo = async (req, res) => {
+  try {
+    // get user
+    const user = await checkUserAuth(req, res);
+
+    const usersBooks = await db.query(
+      `SELECT book_id FROM books WHERE user_id=$1`,
+      [user.rows[0].user_id]
+    );
+
+    usersBooks.rows.forEach(async (book) => {
+      const bookId = book.book_id;
+
+      const deletedBook = await db.query(
+        "DELETE FROM books WHERE book_id=$1 RETURNING *",
+        [bookId]
+      );
+
+      // delete book file
+      if (deletedBook.rows[0].file_path) {
+        deleteFile(deletedBook.rows[0].file_path);
+      }
+
+      // delete genre if it was the only one
+      if (deletedBook.rows[0]) {
+        const genre = await db.query("SELECT * FROM books WHERE genre_id=$1", [
+          deletedBook.rows[0].genre_id,
+        ]);
+        if (genre.rowCount === 0) {
+          await db.query("DELETE FROM genres WHERE genre_id=$1", [
+            deletedBook.rows[0].genre_id,
+          ]);
+        }
+      }
+
+      // delete author if it was the only one
+      if (deletedBook.rows[0]) {
+        const author = await db.query(
+          "SELECT * FROM books WHERE author_id=$1",
+          [deletedBook.rows[0].author_id]
+        );
+        if (author.rowCount === 0) {
+          await db.query("DELETE FROM authors WHERE author_id=$1", [
+            deletedBook.rows[0].author_id,
+          ]);
+        }
+      }
+    });
+
+    const deletedUser = await db.query(
+      `DELETE FROM users WHERE user_id=$1 RETURNING *`,
+      [user.rows[0].user_id]
+    );
+
+    return res
+      .status(200)
+      .json({ message: "User deleted", user: deletedUser.rows[0] });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: error.message });
@@ -74,4 +140,4 @@ async function checkUserAuth(req, res) {
   return user;
 }
 
-module.exports = { getUserInfo, updateUserInfo };
+module.exports = { getUserInfo, updateUserInfo, deleteUserInfo };
