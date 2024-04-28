@@ -5,17 +5,20 @@ const db = require("./db");
 const PORT = process.env.SERVER_PORT || 3000;
 const routes = require("./routes/routes");
 const cookieParser = require("cookie-parser");
-const swaggerUI = require("swagger-ui-express");
-const swaggerJsDoc = require("swagger-jsdoc");
-const swagger = require("./swagger");
+const swaggerSetup = require("./swagger/swaggerSetup");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.SERVER_URL || "http://localhost:3000",
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
-// swagger
-swagger(app);
+// swagger setup
+swaggerSetup(app);
 
 // routes
 app.use("/api", routes);

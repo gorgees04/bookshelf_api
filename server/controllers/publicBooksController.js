@@ -2,7 +2,7 @@ const db = require("../db");
 
 // GET::public books
 const getAllPublicBooks = async (req, res) => {
-  const { limit, offset } = req.params;
+  const { limit, offset } = req.query;
 
   // manage pagination
   const limitBooks = limit ? parseInt(limit) : 20;
