@@ -2,9 +2,14 @@ openapi: "3.0.0"
 info:
   title: "Bookshelf API Documentation"
   version: "1.0.0"
-  description: "Introducing Bookshelf API: Explore, Collect, Share. Your go-to for storing and sharing your favorite books."
+  description: >
+    Introducing Bookshelf API: Explore, Collect, Share. Your go-to for storing and sharing your favorite books. <br/> <br/>
+    The server was built with `Express` and `PostgreSQL`, employing `JWT` for authentication, storing tokens securely in `HTTP-only` cookies. <br/>
+    To improve security, consider setting security headers, implementing token expiration, adding token revocation, managing secrets securely, <br/> 
+    validating user input, implementing rate limiting, and setting up logging and monitoring. <br/>
   contact:
     name: "Gorgees Odisho"
+    email: "gorgees041@gmail.com"
     url: "https://gorgees.vercel.app/"
 servers:
   - url: "http://localhost:3000/api"
@@ -15,6 +20,8 @@ tags:
     description: "Get all public books that users published"
   - name: "Authentication"
     description: "Login/Signup to be able to (add, delete update) books & Logout "
+  - name: "user"
+    description: "Create/Update/delete book"
 
 # paths
 paths:
@@ -281,11 +288,11 @@ paths:
                   user:
                     type: object
                     properties:
-                      userId:
+                      user_id:
                         type: string
-                      firstName:
+                      first_name:
                         type: string
-                      lastName:
+                      last_name:
                         type: string
                       email:
                         type: string
@@ -348,11 +355,11 @@ paths:
                   user:
                     type: object
                     properties:
-                      userId:
+                      user_id:
                         type: string
-                      firstName:
+                      first_name:
                         type: string
-                      lastName:
+                      last_name:
                         type: string
                       email:
                         type: string
@@ -412,3 +419,94 @@ paths:
                 properties:
                   message:
                     type: string
+  # 3) user
+  # creat a new book
+  /books/user/new:
+    post:
+      summary: "Create a new book"
+      description: "To create a new book, you need to first login with endpoint `/auth/login` or signup with endpoint `/auth/signup`."
+      tags:
+        - "user"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bookName:
+                  type: string
+                  description: "Name of the book"
+                  example: ""
+                  required: true
+                description:
+                  type: string
+                  description: "Description of the book"
+                  example: ""
+                  required: true
+                status:
+                  type: string
+                  description: "Status of the book (public or private) by default is public"
+                  enum:
+                    - "private"
+                    - "public"
+                  example: "public"
+                genre:
+                  type: string
+                  description: "Genre of the book"
+                  example: ""
+                  required: true
+                authorName:
+                  type: string
+                  description: "Name of the author"
+                  example: ""
+                  required: true
+                bookUrl:
+                  type: string
+                  description: "URL of the book (google drive link or any link that can provide the book)"
+                  example: ""
+                bookFile:
+                  type: string
+                  format: binary
+                  description: "Upload pdf file of the book"
+      responses:
+        200:
+          description: "New book created"
+          schema:
+            type: "object"
+            properties:
+              book_id:
+                type: "integer"
+              book_name:
+                type: "string"
+              description:
+                type: "string"
+              book_url:
+                type: "string"
+              book_path:
+                type: "string"
+              status:
+                type: "string"
+              genre_id:
+                type: "string"
+              author_id:
+                type: "string"
+              user_id:
+                type: "string"
+        400:
+          description: "Bad request"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
