@@ -8,15 +8,78 @@ info:
     url: "https://gorgees.vercel.app/"
 servers:
   - url: "http://localhost:3000/api"
+
+# tages
 tags:
   - name: "public books"
+
+# paths
 paths:
+  # 1) /books
   /books/public:
     get:
       tags:
         - "public books"
       summary: "Get all public books + pagination"
       parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit of books to show
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  book_id:
+                    type: "string"
+                  book_name:
+                    type: "string"
+                  description:
+                    type: "string"
+                  book_url:
+                    type: "string"
+                  file_path:
+                    type: "string"
+                  status:
+                    type: "string"
+                  author_name:
+                    type: "string"
+                  genre:
+                    type: "string"
+                  user:
+                    type: "object"
+                    properties:
+                      user_id:
+                        type: "string"
+                      first_name:
+                        type: "string"
+                      last_name:
+                        type: "string"
+                      email:
+                        type: "string"
+
+  # public books search
+  /books/public/search:
+    get:
+      tags:
+        - "public books"
+      summary: "search for public books (book name or author name) + pagination"
+      parameters:
+        - in: query
+          name: bookOrAuthor
+          schema:
+            type: string
+          description: search for book by book name or author name
         - in: query
           name: limit
           schema:
