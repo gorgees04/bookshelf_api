@@ -510,3 +510,96 @@ paths:
             properties:
               message:
                 type: "string"
+
+  # updatebook
+  /books/user/{bookId}:
+    put:
+      summary: "Update user's book"
+      description: "To update user's book, you need to first login with endpoint `/auth/login`."
+      tags:
+        - "user"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "bookId"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bookName:
+                  type: string
+                  description: "Name of the book"
+                  example: ""
+                description:
+                  type: string
+                  description: "Description of the book"
+                  example: ""
+                status:
+                  type: string
+                  description: "Status of the book (public or private) by default is public"
+                  enum:
+                    - "private"
+                    - "public"
+                  example: ""
+                genre:
+                  type: string
+                  description: "Genre of the book"
+                  example: ""
+                authorName:
+                  type: string
+                  description: "Name of the author"
+                  example: ""
+                bookUrl:
+                  type: string
+                  description: "URL of the book (google drive link or any link that can provide the book)"
+                  example: ""
+                bookFile:
+                  type: string
+                  format: binary
+                  description: "Upload pdf file of the book"
+      responses:
+        200:
+          description: "Updated book"
+          schema:
+            type: "object"
+            properties:
+              book_id:
+                type: "integer"
+              book_name:
+                type: "string"
+              description:
+                type: "string"
+              book_url:
+                type: "string"
+              book_path:
+                type: "string"
+              status:
+                type: "string"
+              genre_id:
+                type: "string"
+              author_id:
+                type: "string"
+              user_id:
+                type: "string"
+        400:
+          description: "Bad request"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
