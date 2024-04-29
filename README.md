@@ -1,6 +1,6 @@
 # Bookshelf API
 
-- **[API documentation](https://bookshelf-app-dv7j.onrender.com/api-doc)**
+- <a href="https://bookshelf-app-dv7j.onrender.com/api-doc" target="_blank">API documentation</a>
 
 <br>
 
