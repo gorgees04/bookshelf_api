@@ -3,9 +3,11 @@ info:
   title: "Bookshelf API Documentation"
   version: "1.0.0"
   description: >
-    Introducing Bookshelf API: Explore, Collect, Share. Your go-to for storing and sharing your favorite books. <br/> <br/>
-    The server was built with `Express` and `PostgreSQL`, employing `JWT` for authentication, storing tokens securely in `HTTP-only` cookies. <br/>
-    To improve security, consider setting security headers, implementing token expiration, adding token revocation, managing secrets securely, <br/> 
+    Introducing Bookshelf API: Explore, Collect, Share. Your go-to for storing and sharing your favorite books. Create your account and start 
+    storing your book <strong>PRIVATE</strong> as for yourself or <strong>PUBLIC</strong> to be added to our big collection of books so can others 
+    explore.<br/><br/>
+    The server was built with `Express` and `PostgreSQL`, employing `JWT` for authentication, storing tokens securely in `HTTP-only` cookies. 
+    To improve security, consider setting security headers, implementing token expiration, adding token revocation, managing secrets securely,
     validating user input, implementing rate limiting, and setting up logging and monitoring. <br/>
   contact:
     name: "Gorgees Odisho"
