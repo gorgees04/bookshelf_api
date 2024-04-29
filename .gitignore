@@ -5,3 +5,4 @@ package-lock.json
 # local env files
 .env
 
+.DS_Store
