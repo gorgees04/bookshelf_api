@@ -154,13 +154,13 @@ const updateBook = async (req, res) => {
       WHERE book_id=$8 RETURNING *
     `;
     const updatedBook = await db.query(updateQuery, [
-      bookName && capitalize(bookName),
-      description,
-      bookUrl,
+      bookName === "" || !bookName ? null : capitalize(bookName),
+      description === "" || !description ? null : description,
+      bookUrl === "" || !bookUrl ? null : bookUrl,
       pdfFileUrl,
-      status && status.toLowerCase(),
-      genres && genres.rows[0].genre_id,
-      author && author.rows[0].author_id,
+      status === "" || !status ? null : status.toLowerCase(),
+      genres === "" || !genre ? null : genres.rows[0].genre_id,
+      author === "" || !author ? null : author.rows[0].author_id,
       bookId,
     ]);
 

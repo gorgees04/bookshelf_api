@@ -25,6 +25,7 @@ const getUserInfo = async (req, res) => {
 const updateUserInfo = async (req, res) => {
   const { firstName, lastName, email } = req.body;
   try {
+    console.log(req.body);
     // validate email
     if (email) {
       if (!validator.isEmail(email))
@@ -52,9 +53,9 @@ const updateUserInfo = async (req, res) => {
         email = COALESCE($3, email)
         WHERE user_id=$4 RETURNING *`,
       [
-        firstName && capitalize(firstName),
-        lastName && capitalize(lastName),
-        email && email.toLowerCase(),
+        firstName === "" || !firstName ? null : capitalize(firstName),
+        lastName === "" || !lastName ? null : capitalize(lastName),
+        email === "" || !email ? null : email.toLowerCase(),
         user.rows[0].user_id,
       ]
     );

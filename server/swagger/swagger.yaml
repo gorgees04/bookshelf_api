@@ -1,0 +1,1013 @@
+openapi: "3.0.0"
+info:
+  title: "Bookshelf API Documentation"
+  version: "1.0.0"
+  description: >
+    Introducing Bookshelf API: Explore, Collect, Share. Your go-to for storing and sharing your favorite books. <br/> <br/>
+    The server was built with `Express` and `PostgreSQL`, employing `JWT` for authentication, storing tokens securely in `HTTP-only` cookies. <br/>
+    To improve security, consider setting security headers, implementing token expiration, adding token revocation, managing secrets securely, <br/> 
+    validating user input, implementing rate limiting, and setting up logging and monitoring. <br/>
+  contact:
+    name: "Gorgees Odisho"
+    email: "gorgees041@gmail.com"
+    url: "https://gorgees.vercel.app/"
+servers:
+  - url: "http://localhost:3000/api"
+
+# tages
+tags:
+  - name: "Public books"
+    description: "Get all public books that users published"
+  - name: "Authentication"
+    description: "Login/Signup to be able to (add, delete update) books & Logout "
+  - name: "User profile"
+    description: "Create/Update/delete book"
+  - name: "User books"
+    description: "Read/Create/Update/Delete book"
+  - name: "Genres"
+    description: "Genres endpoints"
+  - name: "Authors"
+    description: "Genres endpoints"
+
+# paths
+paths:
+  # 1) /books
+  /books/public:
+    get:
+      tags:
+        - "Public books"
+      summary: "Get all public books"
+      description: >
+        Get all public books. <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit books to diplay (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+
+  /books/public/{bookId}:
+    get:
+      tags:
+        - "Public books"
+      summary: "Get single book"
+      description: >
+        Get single book by book id. <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+          description: get a single book by book id
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # public books search
+  /books/public/search:
+    get:
+      tags:
+        - "Public books"
+      summary: "search for public books"
+      description: >
+        search for public books (book name or author name) <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: bookOrAuthor
+          schema:
+            type: string
+          description: search for book by book name or author name
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+
+  # public books filter
+  /books/public/filter:
+    get:
+      tags:
+        - "Public books"
+      summary: "filter public books by genres"
+      description: >
+        filter public books by genres
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: genres
+          schema:
+            type: string
+          description: filter by genres
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+
+  # ===========================
+  # ===========================
+
+  # 1) /auth
+  /auth/signup:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Signup"
+      description: "Create a new user account and create a token"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+              required:
+                - firstName
+                - lastName
+                - email
+                - password
+                - confirmPassword
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      email:
+                        type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "409":
+          description: "Conflict"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/login:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Login"
+      description: "Login: Authenticate user and generate access token."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      email:
+                        type: string
+                  message:
+                    type: string
+
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  # Logout
+  /auth/logout:
+    get:
+      tags:
+        - "Authentication"
+      summary: "Logout"
+      description: "Logout: Clear user authentication token."
+      responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  # ===========================
+  # ===========================
+
+  # User profile
+
+  /user:
+    get:
+      tags:
+        - "User profile"
+      summary: "Get user profile info "
+      description: "To get user profile info it require authentication login by `/auth/login` or signup by `/auth/signup`"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  hashed_password:
+                    type: string
+                  email:
+                    type: string
+        "401":
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      tags:
+        - "User profile"
+      summary: "Update user profile info"
+      description: "To update user profile info, authentication login is required by `/auth/login` or signup by `/auth/signup`"
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: "First Name"
+                lastName:
+                  type: string
+                  description: "Last Name"
+                email:
+                  type: string
+                  description: "Email"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email:
+                    type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+        - "User profile"
+      summary: "Delete user profile info"
+      description: >
+        THIS A DANGAURS, BE SHOUR 100% YOU WANT TO DELETE YOUR PROFILE, YOU WILL LOSE ALL YOUR DATA!! <br/>
+        To delete user profile info with all book has user added, authentication login is required by `/auth/login` or signup by `/auth/signup`
+        and confirm from your password.
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: "confirm password"
+
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email:
+                    type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # ===========================
+  # ===========================
+
+  # 3) user
+  # creat a new book
+  /books/user/new:
+    post:
+      summary: "Create a new book"
+      description: "To create a new book, you need to first login with endpoint `/auth/login` or signup with endpoint `/auth/signup`."
+      tags:
+        - "User books"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bookName:
+                  type: string
+                  description: "Name of the book"
+                  example: ""
+                  required: true
+                description:
+                  type: string
+                  description: "Description of the book"
+                  example: ""
+                  required: true
+                status:
+                  type: string
+                  description: "Status of the book (public or private) by default is public"
+                  enum:
+                    - "private"
+                    - "public"
+                  example: "public"
+                genre:
+                  type: string
+                  description: "Genre of the book"
+                  example: ""
+                  required: true
+                authorName:
+                  type: string
+                  description: "Name of the author"
+                  example: ""
+                  required: true
+                bookUrl:
+                  type: string
+                  description: "URL of the book (google drive link or any link that can provide the book)"
+                  example: ""
+                bookFile:
+                  type: string
+                  format: binary
+                  description: "Upload pdf file of the book"
+      responses:
+        201:
+          description: "New book created"
+          schema:
+            $ref: "#/components/schemas/books"
+        400:
+          description: "Bad request"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # update book
+  /books/user/{bookId}:
+    put:
+      summary: "Update user's book"
+      description: "To update user's book, you need to first login with endpoint `/auth/login`."
+      tags:
+        - "User books"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "bookId"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bookName:
+                  type: string
+                  description: "Name of the book"
+                  example: ""
+                description:
+                  type: string
+                  description: "Description of the book"
+                  example: ""
+                status:
+                  type: string
+                  description: "Status of the book (public or private) by default is public"
+                  enum:
+                    - "private"
+                    - "public"
+                  example: ""
+                genre:
+                  type: string
+                  description: "Genre of the book"
+                  example: ""
+                authorName:
+                  type: string
+                  description: "Name of the author"
+                  example: ""
+                bookUrl:
+                  type: string
+                  description: "URL of the book (google drive link or any link that can provide the book)"
+                  example: ""
+                bookFile:
+                  type: string
+                  format: binary
+                  description: "Upload pdf file of the book"
+      responses:
+        200:
+          description: "Updated book"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/books"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      summary: "Update user's book"
+      description: "To update user's book, you need to first login with endpoint `/auth/login`."
+      tags:
+        - "User books"
+      parameters:
+        - in: "path"
+          name: "bookId"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          description: "Updated book"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/books"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        500:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    # get sigle user book
+    get:
+      tags:
+        - "User books"
+      summary: "Get single user book"
+      description: >
+        Get single book by book id. <br/>
+        To get all user (your) books you need to login with this endpoint `/auth/login` <br/>
+
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+          description: get a single book by book id
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # ====================================
+  # ====================================
+
+  # get users books
+  /books/user:
+    get:
+      tags:
+        - "User books"
+      summary: "GET user books"
+      description: >
+        To get all user (your) books you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit of books to show
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # user books search
+  /books/user/search:
+    get:
+      tags:
+        - "User books"
+      summary: "search for user books"
+      description: >
+        search for user books by (book name or author name) <br/>
+        To get all user (your) books from search you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: bookOrAuthor
+          schema:
+            type: string
+          description: search for book by book name or author name
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # public books filter
+  /books/user/filter:
+    get:
+      tags:
+        - "User books"
+      summary: "filter user books by genres"
+      description: >
+        filter public books by genres
+        To get all user (your) books from filtet you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: genres
+          schema:
+            type: string
+          description: filter by genres
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # genres endpoint
+  /models/genres:
+    get:
+      tags:
+        - "Genres"
+      summary: "Get all genres"
+      description: >
+        Get all genres and the count of books that has the genres
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  genre_id:
+                    type: string
+                  genre:
+                    type: string
+                  book_count:
+                    type: integer
+
+  # authors endpoint
+  /models/authors:
+    get:
+      tags:
+        - "Authors"
+      summary: "Get all authors"
+      description: >
+        Get all authors and the count of his books
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  author_id:
+                    type: string
+                  author_name:
+                    type: string
+                  book_count:
+                    type: integer
+
+components:
+  schemas:
+    book_res:
+      type: "object"
+      properties:
+        book_id:
+          type: "string"
+        book_name:
+          type: "string"
+        description:
+          type: "string"
+        book_url:
+          type: "string"
+        file_path:
+          type: "string"
+        status:
+          type: "string"
+        author_name:
+          type: "string"
+        genre:
+          type: "string"
+        user:
+          type: "object"
+          properties:
+            user_id:
+              type: "string"
+            first_name:
+              type: "string"
+            last_name:
+              type: "string"
+            email:
+              type: "string"
+
+    books:
+      type: object
+      properties:
+        book_id:
+          type: string
+        book_name:
+          type: string
+        description:
+          type: string
+        book_url:
+          type: string
+        book_path:
+          type: string
+        status:
+          type: string
+        genre_id:
+          type: string
+        author_id:
+          type: string
+        user_id:
+          type: string
+
+    users:
+      type: object
+      properties:
+        user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    genres:
+      type: object
+      properties:
+        genre_id:
+          type: string
+        genre:
+          type: string
+
+    authors:
+      type: object
+      properties:
+        author_id:
+          type: string
+        author_name:
+          type: string
