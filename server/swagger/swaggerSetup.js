@@ -1,12 +1,19 @@
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 const YAML = require("yamljs");
+require("dotenv").config();
 
 const path = require("path");
 const filePath = path.resolve(__dirname, "swagger.yaml");
 
+let swaggerDocument = YAML.load(filePath);
+
+// Replace the placeholder with the actual SERVER_URL from environment variables
+const SERVER_URL = process.env.SERVER_URL;
+swaggerDocument.servers = [{ url: `${SERVER_URL}/api` }];
+
 const options = {
-  definition: YAML.load(filePath),
+  definition: swaggerDocument,
   apis: ["./routes/*.js"],
 };
 
