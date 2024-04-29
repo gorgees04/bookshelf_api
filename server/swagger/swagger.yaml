@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
 
   /books/public/{bookId}:
     get:
@@ -80,7 +80,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
         "404":
           description: "Not found"
           content:
@@ -122,7 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
 
   # public books filter
   /books/public/filter:
@@ -155,7 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
 
   # ===========================
   # ===========================
@@ -334,6 +334,185 @@ paths:
                 properties:
                   message:
                     type: string
+  # ===========================
+  # ===========================
+
+  # User profile
+
+  /user:
+    get:
+      tags:
+        - "User profile"
+      summary: "Get user profile info "
+      description: "To get user profile info it require authentication login by `/auth/login` or signup by `/auth/signup`"
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  hashed_password:
+                    type: string
+                  email:
+                    type: string
+        "401":
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    put:
+      tags:
+        - "User profile"
+      summary: "Update user profile info"
+      description: "To update user profile info, authentication login is required by `/auth/login` or signup by `/auth/signup`"
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                  description: "First Name"
+                lastName:
+                  type: string
+                  description: "Last Name"
+                email:
+                  type: string
+                  description: "Email"
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email:
+                    type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+        - "User profile"
+      summary: "Delete user profile info"
+      description: >
+        THIS A DANGAURS, BE SHOUR 100% YOU WANT TO DELETE YOUR PROFILE, YOU WILL LOSE ALL YOUR DATA!! <br/>
+        To delete user profile info with all book has user added, authentication login is required by `/auth/login` or signup by `/auth/signup`
+        and confirm from your password.
+      produces:
+        - "application/json"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: "confirm password"
+
+      responses:
+        "200":
+          description: "Successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                  first_name:
+                    type: string
+                  last_name:
+                    type: string
+                  email:
+                    type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # ===========================
+  # ===========================
+
   # 3) user
   # creat a new book
   /books/user/new:
@@ -388,10 +567,10 @@ paths:
                   format: binary
                   description: "Upload pdf file of the book"
       responses:
-        200:
+        201:
           description: "New book created"
           schema:
-            $ref: "#/components/schemas/book_res"
+            $ref: "#/components/schemas/books"
         400:
           description: "Bad request"
           schema:
@@ -399,13 +578,24 @@ paths:
             properties:
               message:
                 type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # update book
   /books/user/{bookId}:
@@ -467,21 +657,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_res"
-        400:
-          description: "Bad request"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-        500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
+                $ref: "#/components/schemas/books"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
     delete:
       summary: "Update user's book"
@@ -500,21 +694,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_res"
-        400:
-          description: "Bad request"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
+                $ref: "#/components/schemas/books"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         500:
-          description: "Internal server error"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
     # get sigle user book
     get:
       tags:
@@ -537,7 +735,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         "404":
           description: "Not found"
           content:
@@ -577,7 +784,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # user books search
   /books/user/search:
@@ -611,7 +827,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # public books filter
   /books/user/filter:
@@ -645,7 +870,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/book_schema"
+                $ref: "#/components/schemas/book_res"
+        401:
+          description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # genres endpoint
   /models/genres:
@@ -695,7 +929,7 @@ paths:
 
 components:
   schemas:
-    book_schema:
+    book_res:
       type: "object"
       properties:
         book_id:
@@ -726,7 +960,7 @@ components:
             email:
               type: "string"
 
-    book_res:
+    books:
       type: object
       properties:
         book_id:
@@ -746,4 +980,34 @@ components:
         author_id:
           type: string
         user_id:
+          type: string
+
+    users:
+      type: object
+      properties:
+        user_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    genres:
+      type: object
+      properties:
+        genre_id:
+          type: string
+        genre:
+          type: string
+
+    authors:
+      type: object
+      properties:
+        author_id:
+          type: string
+        author_name:
           type: string
