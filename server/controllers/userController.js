@@ -44,22 +44,28 @@ const updateUserInfo = async (req, res) => {
     // get user
     const user = await checkUserAuth(req, res);
 
-    // confirm from user's prev password before change the paswword
-    const matchPassword = await bcrypt.compare(
-      prevPassword,
-      user.rows[0].hashed_password
-    );
+    // check first if there is a new password
+    let hashedNewPassword;
+    if (newPassword) {
+      // confirm from user's prev password before change the paswword
+      const matchPassword = await bcrypt.compare(
+        prevPassword,
+        user.rows[0].hashed_password
+      );
 
-    if (!matchPassword)
-      return res.status(401).json({ message: "Incorrect password" });
+      if (!matchPassword)
+        return res.status(401).json({ message: "Incorrect password" });
 
-    // check the strength of the new password
-    if (newPassword && !validator.isStrongPassword(newPassword)) {
-      return res.status(400).json({ message: "Password is not strong enough" });
+      // check the strength of the new password
+      if (newPassword && !validator.isStrongPassword(newPassword)) {
+        return res
+          .status(400)
+          .json({ message: "Password is not strong enough" });
+      }
+
+      // if prev password was correct then now hash the new password
+      hashedNewPassword = await bcrypt.hash(newPassword, 10);
     }
-
-    // if prev password was correct then now hash the new password
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     // get user info
     const updatedUserInfo = await db.query(

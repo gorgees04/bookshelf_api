@@ -64,6 +64,7 @@ const signup = async (req, res) => {
     const userExist = await db.query("SELECT email FROM users WHERE email=$1", [
       email,
     ]);
+
     if (userExist.rows.length > 0)
       return res
         .status(409)

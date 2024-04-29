@@ -111,7 +111,7 @@ const filterUsersBooks = async (req, res) => {
   // Sanitize and validate input
   const safeGenres = genres ? `%${genres.toLowerCase()}%` : "";
   const safeStatus = status ? `%${status.toLowerCase()}%` : "";
-  console.log(safeGenres, safeStatus);
+
   // manage pagination
   const limitBooks = limit ? parseInt(limit) : 20;
   const safeOffset = offset ? parseInt(offset) : 0;
