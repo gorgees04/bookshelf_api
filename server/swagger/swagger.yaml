@@ -16,12 +16,18 @@ servers:
 
 # tages
 tags:
-  - name: "public books"
+  - name: "Public books"
     description: "Get all public books that users published"
   - name: "Authentication"
     description: "Login/Signup to be able to (add, delete update) books & Logout "
-  - name: "user"
+  - name: "User profile"
     description: "Create/Update/delete book"
+  - name: "User books"
+    description: "Read/Create/Update/Delete book"
+  - name: "Genres"
+    description: "Genres endpoints"
+  - name: "Authors"
+    description: "Genres endpoints"
 
 # paths
 paths:
@@ -29,14 +35,17 @@ paths:
   /books/public:
     get:
       tags:
-        - "public books"
-      summary: "Get all public books + pagination"
+        - "Public books"
+      summary: "Get all public books"
+      description: >
+        Get all public books. <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
       parameters:
         - in: query
           name: limit
           schema:
             type: integer
-          description: number of limit of books to show
+          description: number of limit books to diplay (by default limit = 20)
         - in: query
           name: offset
           schema:
@@ -48,41 +57,16 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  book_id:
-                    type: "string"
-                  book_name:
-                    type: "string"
-                  description:
-                    type: "string"
-                  book_url:
-                    type: "string"
-                  file_path:
-                    type: "string"
-                  status:
-                    type: "string"
-                  author_name:
-                    type: "string"
-                  genre:
-                    type: "string"
-                  user:
-                    type: "object"
-                    properties:
-                      user_id:
-                        type: "string"
-                      first_name:
-                        type: "string"
-                      last_name:
-                        type: "string"
-                      email:
-                        type: "string"
+                $ref: "#/components/schemas/book_schema"
 
   /books/public/{bookId}:
     get:
       tags:
-        - "public books"
-      summary: "Get single book by id"
+        - "Public books"
+      summary: "Get single book"
+      description: >
+        Get single book by book id. <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
       parameters:
         - in: path
           name: bookId
@@ -96,42 +80,26 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
+                $ref: "#/components/schemas/book_schema"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
                 properties:
-                  book_id:
-                    type: "string"
-                  book_name:
-                    type: "string"
-                  description:
-                    type: "string"
-                  book_url:
-                    type: "string"
-                  file_path:
-                    type: "string"
-                  status:
-                    type: "string"
-                  author_name:
-                    type: "string"
-                  genre:
-                    type: "string"
-                  user:
-                    type: "object"
-                    properties:
-                      user_id:
-                        type: "string"
-                      first_name:
-                        type: "string"
-                      last_name:
-                        type: "string"
-                      email:
-                        type: "string"
+                  message:
+                    type: string
 
   # public books search
   /books/public/search:
     get:
       tags:
-        - "public books"
-      summary: "search for public books (book name or author name) + pagination"
+        - "Public books"
+      summary: "search for public books"
+      description: >
+        search for public books (book name or author name) <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
       parameters:
         - in: query
           name: bookOrAuthor
@@ -142,7 +110,7 @@ paths:
           name: limit
           schema:
             type: integer
-          description: number of limit of books to show
+          description: number of limit is how many books display for each page (by default limit = 20)
         - in: query
           name: offset
           schema:
@@ -154,42 +122,17 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  book_id:
-                    type: "string"
-                  book_name:
-                    type: "string"
-                  description:
-                    type: "string"
-                  book_url:
-                    type: "string"
-                  file_path:
-                    type: "string"
-                  status:
-                    type: "string"
-                  author_name:
-                    type: "string"
-                  genre:
-                    type: "string"
-                  user:
-                    type: "object"
-                    properties:
-                      user_id:
-                        type: "string"
-                      first_name:
-                        type: "string"
-                      last_name:
-                        type: "string"
-                      email:
-                        type: "string"
+                $ref: "#/components/schemas/book_schema"
 
   # public books filter
   /books/public/filter:
     get:
       tags:
-        - "public books"
-      summary: "filter public books by genres + pagination"
+        - "Public books"
+      summary: "filter public books by genres"
+      description: >
+        filter public books by genres
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
       parameters:
         - in: query
           name: genres
@@ -200,7 +143,7 @@ paths:
           name: limit
           schema:
             type: integer
-          description: number of limit of books to show
+          description: number of limit is how many books display for each page (by default limit = 20)
         - in: query
           name: offset
           schema:
@@ -212,35 +155,7 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  book_id:
-                    type: "string"
-                  book_name:
-                    type: "string"
-                  description:
-                    type: "string"
-                  book_url:
-                    type: "string"
-                  file_path:
-                    type: "string"
-                  status:
-                    type: "string"
-                  author_name:
-                    type: "string"
-                  genre:
-                    type: "string"
-                  user:
-                    type: "object"
-                    properties:
-                      user_id:
-                        type: "string"
-                      first_name:
-                        type: "string"
-                      last_name:
-                        type: "string"
-                      email:
-                        type: "string"
+                $ref: "#/components/schemas/book_schema"
 
   # ===========================
   # ===========================
@@ -426,7 +341,7 @@ paths:
       summary: "Create a new book"
       description: "To create a new book, you need to first login with endpoint `/auth/login` or signup with endpoint `/auth/signup`."
       tags:
-        - "user"
+        - "User books"
       consumes:
         - "multipart/form-data"
       produces:
@@ -476,26 +391,7 @@ paths:
         200:
           description: "New book created"
           schema:
-            type: "object"
-            properties:
-              book_id:
-                type: "integer"
-              book_name:
-                type: "string"
-              description:
-                type: "string"
-              book_url:
-                type: "string"
-              book_path:
-                type: "string"
-              status:
-                type: "string"
-              genre_id:
-                type: "string"
-              author_id:
-                type: "string"
-              user_id:
-                type: "string"
+            $ref: "#/components/schemas/book_res"
         400:
           description: "Bad request"
           schema:
@@ -511,13 +407,13 @@ paths:
               message:
                 type: "string"
 
-  # updatebook
+  # update book
   /books/user/{bookId}:
     put:
       summary: "Update user's book"
       description: "To update user's book, you need to first login with endpoint `/auth/login`."
       tags:
-        - "user"
+        - "User books"
       consumes:
         - "multipart/form-data"
       produces:
@@ -568,27 +464,10 @@ paths:
       responses:
         200:
           description: "Updated book"
-          schema:
-            type: "object"
-            properties:
-              book_id:
-                type: "integer"
-              book_name:
-                type: "string"
-              description:
-                type: "string"
-              book_url:
-                type: "string"
-              book_path:
-                type: "string"
-              status:
-                type: "string"
-              genre_id:
-                type: "string"
-              author_id:
-                type: "string"
-              user_id:
-                type: "string"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
         400:
           description: "Bad request"
           schema:
@@ -603,3 +482,268 @@ paths:
             properties:
               message:
                 type: "string"
+
+    delete:
+      summary: "Update user's book"
+      description: "To update user's book, you need to first login with endpoint `/auth/login`."
+      tags:
+        - "User books"
+      parameters:
+        - in: "path"
+          name: "bookId"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          description: "Updated book"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_res"
+        400:
+          description: "Bad request"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+        500:
+          description: "Internal server error"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+    # get sigle user book
+    get:
+      tags:
+        - "User books"
+      summary: "Get single user book"
+      description: >
+        Get single book by book id. <br/>
+        To get all user (your) books you need to login with this endpoint `/auth/login` <br/>
+
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+          description: get a single book by book id
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_schema"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  # ====================================
+  # ====================================
+
+  # get users books
+  /books/user:
+    get:
+      tags:
+        - "User books"
+      summary: "GET user books"
+      description: >
+        To get all user (your) books you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit of books to show
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_schema"
+
+  # user books search
+  /books/user/search:
+    get:
+      tags:
+        - "User books"
+      summary: "search for user books"
+      description: >
+        search for user books by (book name or author name) <br/>
+        To get all user (your) books from search you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: bookOrAuthor
+          schema:
+            type: string
+          description: search for book by book name or author name
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_schema"
+
+  # public books filter
+  /books/user/filter:
+    get:
+      tags:
+        - "User books"
+      summary: "filter user books by genres"
+      description: >
+        filter public books by genres
+        To get all user (your) books from filtet you need to login with this endpoint `/auth/login` <br/>
+        To implement pagination pass to query params offsets for page and limit for how many pages want to diplay.
+      parameters:
+        - in: query
+          name: genres
+          schema:
+            type: string
+          description: filter by genres
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: number of limit is how many books display for each page (by default limit = 20)
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          description: number of page (limit * offset)
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/book_schema"
+
+  # genres endpoint
+  /models/genres:
+    get:
+      tags:
+        - "Genres"
+      summary: "Get all genres"
+      description: >
+        Get all genres and the count of books that has the genres
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  genre_id:
+                    type: string
+                  genre:
+                    type: string
+                  book_count:
+                    type: integer
+
+  # authors endpoint
+  /models/authors:
+    get:
+      tags:
+        - "Authors"
+      summary: "Get all authors"
+      description: >
+        Get all authors and the count of his books
+      responses:
+        "200":
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  author_id:
+                    type: string
+                  author_name:
+                    type: string
+                  book_count:
+                    type: integer
+
+components:
+  schemas:
+    book_schema:
+      type: "object"
+      properties:
+        book_id:
+          type: "string"
+        book_name:
+          type: "string"
+        description:
+          type: "string"
+        book_url:
+          type: "string"
+        file_path:
+          type: "string"
+        status:
+          type: "string"
+        author_name:
+          type: "string"
+        genre:
+          type: "string"
+        user:
+          type: "object"
+          properties:
+            user_id:
+              type: "string"
+            first_name:
+              type: "string"
+            last_name:
+              type: "string"
+            email:
+              type: "string"
+
+    book_res:
+      type: object
+      properties:
+        book_id:
+          type: string
+        book_name:
+          type: string
+        description:
+          type: string
+        book_url:
+          type: string
+        book_path:
+          type: string
+        status:
+          type: string
+        genre_id:
+          type: string
+        author_id:
+          type: string
+        user_id:
+          type: string
