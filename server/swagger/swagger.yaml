@@ -403,6 +403,12 @@ paths:
                 email:
                   type: string
                   description: "Email"
+                prevPassword:
+                  type: string
+                  description: "Previous password"
+                newPassword:
+                  type: string
+                  description: "New password"
       responses:
         "200":
           description: "Successful operation"
