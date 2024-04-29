@@ -6,4 +6,17 @@ const capitalize = (str) => {
   return capArr.join(" ");
 };
 
-module.exports = { capitalize };
+// res not found function
+
+const notFound = (arr, res) => {
+  try {
+    if (!arr) {
+      return res.status(404).json({ message: "Not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { capitalize, notFound };

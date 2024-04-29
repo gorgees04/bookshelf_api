@@ -1,6 +1,6 @@
 const db = require("../db");
 const { uploadFile, deleteFile } = require("../utils/fileUpload/filesStorage");
-const { capitalize } = require("../utils/functions");
+const { capitalize, notFound } = require("../utils/functions");
 const { validationCreateBook } = require("../utils/validation");
 
 // POST::create a new book
@@ -114,6 +114,9 @@ const updateBook = async (req, res) => {
 
     const book = await db.query(bookQuery, [bookId, user.rows[0].user_id]);
 
+    // if book is not found
+    notFound(book.rows[0], res);
+
     // check if the other matches, if not create a new one
     let author;
     if (authorName && authorName.toLowerCase() !== book.rows[0].author_name) {
@@ -184,6 +187,9 @@ const deleteBook = async (req, res) => {
       "DELETE FROM books WHERE book_id=$1 AND user_id=$2 RETURNING *",
       [bookId, user.rows[0].user_id]
     );
+
+    // if book is not found
+    notFound(deletedBook.rows[0], res);
 
     // delete book file
     if (deletedBook.rows[0]) {

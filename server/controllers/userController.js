@@ -2,6 +2,7 @@ const db = require("../db");
 const { deleteFile } = require("../utils/fileUpload/filesStorage");
 const { capitalize } = require("../utils/functions");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 // GET::get user's info
 const getUserInfo = async (req, res) => {
@@ -23,9 +24,8 @@ const getUserInfo = async (req, res) => {
 
 // PUT::update user's info
 const updateUserInfo = async (req, res) => {
-  const { firstName, lastName, email } = req.body;
+  const { firstName, lastName, email, prevPassword, newPassword } = req.body;
   try {
-    console.log(req.body);
     // validate email
     if (email) {
       if (!validator.isEmail(email))
@@ -44,18 +44,43 @@ const updateUserInfo = async (req, res) => {
     // get user
     const user = await checkUserAuth(req, res);
 
+    // check first if there is a new password
+    let hashedNewPassword;
+    if (newPassword) {
+      // confirm from user's prev password before change the paswword
+      const matchPassword = await bcrypt.compare(
+        prevPassword,
+        user.rows[0].hashed_password
+      );
+
+      if (!matchPassword)
+        return res.status(401).json({ message: "Incorrect password" });
+
+      // check the strength of the new password
+      if (newPassword && !validator.isStrongPassword(newPassword)) {
+        return res
+          .status(400)
+          .json({ message: "Password is not strong enough" });
+      }
+
+      // if prev password was correct then now hash the new password
+      hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    }
+
     // get user info
     const updatedUserInfo = await db.query(
       `
         UPDATE users SET 
         first_name = COALESCE($1, first_name),
         last_name = COALESCE($2, last_name),
-        email = COALESCE($3, email)
-        WHERE user_id=$4 RETURNING *`,
+        email = COALESCE($3, email),
+        hashed_password = COALESCE($4, hashed_password)
+        WHERE user_id=$5 RETURNING *`,
       [
         firstName === "" || !firstName ? null : capitalize(firstName),
         lastName === "" || !lastName ? null : capitalize(lastName),
         email === "" || !email ? null : email.toLowerCase(),
+        newPassword === "" || !newPassword ? null : hashedNewPassword,
         user.rows[0].user_id,
       ]
     );
@@ -71,9 +96,19 @@ const updateUserInfo = async (req, res) => {
 
 // DELETE::delete user and all his books
 const deleteUserInfo = async (req, res) => {
+  const { password } = req.body;
   try {
     // get user
     const user = await checkUserAuth(req, res);
+
+    // confirm from user's password before delete his accound
+    const matchPassword = await bcrypt.compare(
+      password,
+      user.rows[0].hashed_password
+    );
+
+    if (!matchPassword)
+      return res.status(401).json({ message: "Incorrect password" });
 
     const usersBooks = await db.query(
       `SELECT book_id FROM books WHERE user_id=$1`,

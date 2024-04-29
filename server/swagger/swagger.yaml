@@ -58,6 +58,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/book_res"
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   /books/public/{bookId}:
     get:
@@ -83,6 +92,15 @@ paths:
                 $ref: "#/components/schemas/book_res"
         "404":
           description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
           content:
             application/json:
               schema:
@@ -123,6 +141,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/book_res"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # public books filter
   /books/public/filter:
@@ -156,6 +192,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/book_res"
+        "404":
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "500":
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # ===========================
   # ===========================
@@ -353,15 +407,32 @@ paths:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: string
-                  first_name:
-                    type: string
-                  last_name:
-                    type: string
-                  hashed_password:
-                    type: string
-                  email:
+                  message:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      hashed_password:
+                        type: string
+                      email:
+                        type: string
+        "400":
+          description: "Bad Request"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
                     type: string
         "401":
           description: "Access denied"
@@ -403,22 +474,38 @@ paths:
                 email:
                   type: string
                   description: "Email"
+                prevPassword:
+                  type: string
+                  description: "Previous password"
+                newPassword:
+                  type: string
+                  description: "New password"
       responses:
         "200":
-          description: "Successful operation"
+          description: "successful operation"
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: string
-                  first_name:
-                    type: string
-                  last_name:
-                    type: string
-                  email:
-                    type: string
+                  message:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      hashed_password:
+                        type: string
+                      email:
+                        type: string
         "400":
           description: "Bad Request"
           content:
@@ -468,20 +555,30 @@ paths:
 
       responses:
         "200":
-          description: "Successful operation"
+          description: "successful operation"
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  user_id:
-                    type: string
-                  first_name:
-                    type: string
-                  last_name:
-                    type: string
-                  email:
-                    type: string
+                  message:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                  user:
+                    type: object
+                    properties:
+                      user_id:
+                        type: string
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      hashed_password:
+                        type: string
+                      email:
+                        type: string
         "400":
           description: "Bad Request"
           content:
@@ -569,15 +666,43 @@ paths:
       responses:
         201:
           description: "New book created"
-          schema:
-            $ref: "#/components/schemas/books"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  user:
+                    type: object
+                    properties:
+                      book_id:
+                        type: string
+                      book_name:
+                        type: string
+                      description:
+                        type: string
+                      book_url:
+                        type: string
+                      book_path:
+                        type: string
+                      status:
+                        type: string
+                      genre_id:
+                        type: string
+                      author_id:
+                        type: string
+                      user_id:
+                        type: string
         400:
           description: "Bad request"
-          schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
         401:
           description: "Access denied"
           content:
@@ -653,13 +778,46 @@ paths:
                   description: "Upload pdf file of the book"
       responses:
         200:
-          description: "Updated book"
+          description: "success"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/books"
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  user:
+                    type: object
+                    properties:
+                      book_id:
+                        type: string
+                      book_name:
+                        type: string
+                      description:
+                        type: string
+                      book_url:
+                        type: string
+                      book_path:
+                        type: string
+                      status:
+                        type: string
+                      genre_id:
+                        type: string
+                      author_id:
+                        type: string
+                      user_id:
+                        type: string
         401:
           description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: "Not found"
           content:
             application/json:
               schema:
@@ -694,9 +852,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/books"
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                  user:
+                    type: object
+                    properties:
+                      book_id:
+                        type: string
+                      book_name:
+                        type: string
+                      description:
+                        type: string
+                      book_url:
+                        type: string
+                      book_path:
+                        type: string
+                      status:
+                        type: string
+                      genre_id:
+                        type: string
+                      author_id:
+                        type: string
+                      user_id:
+                        type: string
         401:
           description: "Access denied"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        404:
+          description: "Not found"
           content:
             application/json:
               schema:
@@ -745,8 +936,17 @@ paths:
                 properties:
                   message:
                     type: string
-        "404":
+        404:
           description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        500:
+          description: "Internal Server Error"
           content:
             application/json:
               schema:
@@ -837,6 +1037,24 @@ paths:
                 properties:
                   message:
                     type: string
+        404:
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        500:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # public books filter
   /books/user/filter:
@@ -880,6 +1098,24 @@ paths:
                 properties:
                   message:
                     type: string
+        404:
+          description: "Not found"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        500:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # genres endpoint
   /models/genres:
@@ -903,6 +1139,15 @@ paths:
                     type: string
                   book_count:
                     type: integer
+        500:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   # authors endpoint
   /models/authors:
@@ -926,6 +1171,15 @@ paths:
                     type: string
                   book_count:
                     type: integer
+        500:
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
 components:
   schemas:
