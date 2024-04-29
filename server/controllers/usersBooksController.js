@@ -1,4 +1,5 @@
 const db = require("../db");
+const { notFound } = require("../utils/functions");
 
 // GET::all user's book, public and private
 const getAllUsersBooks = async (req, res) => {
@@ -56,6 +57,9 @@ const getSingleUsersBook = async (req, res) => {
       [user.rows[0].user_id, bookId]
     );
 
+    // if there no res it will return not found
+    notFound(book.rows[0], res);
+
     return res.status(200).json(book.rows[0]);
   } catch (error) {
     console.error(error);
@@ -89,6 +93,9 @@ const searchUsersBooks = async (req, res) => {
         `,
       [user.rows[0].user_id, bookOrAuthor, limitBooks, limitBooks * safeOffset]
     );
+
+    // if there no res it will return not found
+    notFound(books.rows[0], res);
 
     return res.status(200).json(books.rows);
   } catch (error) {
@@ -128,6 +135,9 @@ const filterUsersBooks = async (req, res) => {
         `,
       [user.rows[0].user_id, genres, status, limitBooks, page]
     );
+
+    // if there no res it will return not found
+    notFound(books.rows[0], res);
 
     return res.status(200).json(books.rows);
   } catch (error) {
