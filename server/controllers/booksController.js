@@ -42,7 +42,7 @@ const createBook = async (req, res) => {
     if (author.rows.length === 0) {
       author = await db.query(
         "INSERT INTO authors (author_name) VALUES ($1) RETURNING *",
-        [authorName.toLowerCase()]
+        [authorName]
       );
     }
 
