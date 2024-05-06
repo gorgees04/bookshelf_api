@@ -22,6 +22,7 @@ const specs = swaggerJsDoc(options);
 module.exports = (app) => {
   // Customize Swagger UI configuration
   const swaggerUIOptions = {
+    customSiteTitle: "Bookshelf API doc",
     swaggerOptions: {
       // Add support for file upload in request parameters
       plugins: [
