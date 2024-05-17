@@ -1,6 +1,6 @@
 # Bookshelf API
 
-- <a href="[https://bookshelf-app-dv7j.onrender.com/api-doc](http://ec2-16-171-34-117.eu-north-1.compute.amazonaws.com/api-doc/)" target="_blank">API documentation</a>
+- <a href="http://ec2-16-171-34-117.eu-north-1.compute.amazonaws.com/api-doc" target="_blank">API documentation</a>
 
 <br>
 
