@@ -19,7 +19,7 @@ The server was built with `Express` and `PostgreSQL`, employing `JWT` for authen
 - Bcrypt (password hashing)
 - PostgreSQL (SQL database)
 - Firebase (file storage)
-- Supabase (PostgreSQL hosting)
+- AWS EC2 Instance (Hosting server & Website)
   <br>
   <br>
 
