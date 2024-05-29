@@ -11,8 +11,8 @@ info:
     validating user input, implementing rate limiting, and setting up logging and monitoring. <br/>
   contact:
     name: "Gorgees Odisho"
-    email: "gorgees041@gmail.com"
-    url: "https://gorgees.vercel.app/"
+    # email: "gorgees041@gmail.com"
+    # url: "https://gorgees.vercel.app/"
 servers:
   - url: <SERVER_URL>
 
